@@ -10,21 +10,38 @@ connect.then((db) => {
 
     console.log('Connected correctly to server');
 
-     Dishes.create({
+
+    Dishes.create({
         name: 'Uthappizza',
         description: 'test'
-
     })
         .then((dish) => {
             console.log(dish);
-            /**Elle troube tous les dishes  dans la BD et les rend disponible
+            /**Elle trouve le dish ajouter dans la BD et le rend disponible
              pour l'utilisateur*/
-            return Dishes.find({});
+            return Dishes.findByIdAndUpdate(dish._id, {
+                $set: {description: 'Updated test'}
+            }, {
+                new: true
+            })
+                .exec();
         })
-        .then((dishes) => {
-            console.log(dishes);
-            /**dans le premier then on trouve tout les plats et ici on les affiches
-             puis on supprimes tout les plats de la bd*/
+        .then((dish) => {
+            console.log(dish);
+            /**dans le premier then on trouve  le plat et ici on ajouter les commentaires
+             puis on le sauvegardes   ds la bd*/
+
+            dish.comments.push({
+                rating: 5,
+                comment: 'I\'m getting a sinking feeling!',
+                author: 'Leonardo di Carpaccio'
+            });
+
+            return dish.save();
+        })
+        .then((dish) => {
+            console.log(dish);
+
             return Dishes.remove({});
         })
         .then(() => {
@@ -33,5 +50,4 @@ connect.then((db) => {
         .catch((err) => {
             console.log(err);
         });
-
 });
